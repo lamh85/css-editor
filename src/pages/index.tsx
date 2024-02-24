@@ -6,27 +6,31 @@ type StyleStateT = { [key: string]: string }
 export default function Home() {
   // const rectangleRef = useRef(null)
   const [rectangleStyle, setRectangleStyle] = useState<StyleStateT>({})
+  const [didInitializeRadius, setDidInitializeRadius] = useState(false)
 
   const handleRectangleLoad = (element: HTMLDivElement) => {
-    if (!element) {
+    if (!element || didInitializeRadius) {
       return
     }
 
-    const radiusProperties = Object.keys(element.style).filter((key) =>
-      key.toLowerCase().includes('radius')
-    )
+    const radiusProperties = Object.keys(element.style).filter((key) => {
+      const keyNormalized = key.toLowerCase()
+      return (
+        keyNormalized.includes('radius') && !keyNormalized.includes('webkit')
+      )
+    })
 
     const newStyle: { [key: string]: string } = {}
     radiusProperties.forEach((property) => (newStyle[property] = ''))
-    console.log('handle load ===')
     setRectangleStyle(newStyle)
+    setDidInitializeRadius(true)
   }
 
   // TODO: append "%" to css property value
   const handleRadiusFormChange = (styleProperty: string, value: string) => {
     const newStyle = { ...rectangleStyle }
     newStyle[styleProperty] = value
-    // setRectangleStyle(newStyle)
+    setRectangleStyle(newStyle)
   }
 
   return (
@@ -52,9 +56,10 @@ export default function Home() {
           }}
         ></div>
         <>
-          {Object.keys(rectangleStyle).forEach((styleProperty) => {
+          {Object.keys(rectangleStyle).map((styleProperty) => {
             return (
               <RadiusFormFieldGroup
+                key={styleProperty}
                 styleProperty={styleProperty}
                 inputValue={rectangleStyle[styleProperty]}
                 changeHandler={handleRadiusFormChange}
