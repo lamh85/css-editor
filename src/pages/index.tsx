@@ -7,7 +7,12 @@ export default function Home() {
     <>
       <div
         className="canvas"
-        style={{ height: 500, width: 1000, background: 'grey' }}
+        style={{
+          height: 500,
+          width: 1000,
+          background: 'lightgrey',
+          padding: 50,
+        }}
       >
         <div
           className="rectangle"
@@ -16,6 +21,7 @@ export default function Home() {
             width: 100,
             background: 'white',
             borderRadius: `${borderRadius}%`,
+            marginBottom: 50,
           }}
         ></div>
         <input
