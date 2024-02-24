@@ -1,7 +1,33 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import { RadiusFormFieldGroup } from './RadiusFormFieldGroup'
+
+type StyleStateT = { [key: string]: string }
 
 export default function Home() {
-  const [borderRadius, setBorderRadius] = useState('0')
+  // const rectangleRef = useRef(null)
+  const [rectangleStyle, setRectangleStyle] = useState<StyleStateT>({})
+
+  const handleRectangleLoad = (element: HTMLDivElement) => {
+    if (!element) {
+      return
+    }
+
+    const radiusProperties = Object.keys(element.style).filter((key) =>
+      key.toLowerCase().includes('radius')
+    )
+
+    const newStyle: { [key: string]: string } = {}
+    radiusProperties.forEach((property) => (newStyle[property] = ''))
+    console.log('handle load ===')
+    setRectangleStyle(newStyle)
+  }
+
+  // TODO: append "%" to css property value
+  const handleRadiusFormChange = (styleProperty: string, value: string) => {
+    const newStyle = { ...rectangleStyle }
+    newStyle[styleProperty] = value
+    // setRectangleStyle(newStyle)
+  }
 
   return (
     <>
@@ -15,25 +41,27 @@ export default function Home() {
         }}
       >
         <div
+          ref={(element) => element && handleRectangleLoad(element)}
           className="rectangle"
           style={{
             height: 100,
             width: 100,
             background: 'white',
-            borderRadius: `${borderRadius}%`,
             marginBottom: 50,
+            ...rectangleStyle,
           }}
         ></div>
-        <input
-          type="range"
-          value={borderRadius}
-          onChange={(event) => {
-            setBorderRadius(event.target.value)
-          }}
-          min="0"
-          max="50"
-        />
-        <div>{borderRadius}</div>
+        <>
+          {Object.keys(rectangleStyle).forEach((styleProperty) => {
+            return (
+              <RadiusFormFieldGroup
+                styleProperty={styleProperty}
+                inputValue={rectangleStyle[styleProperty]}
+                changeHandler={handleRadiusFormChange}
+              />
+            )
+          })}
+        </>
       </div>
     </>
   )
